@@ -1,0 +1,24 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Dataset
+dataset/
+
+# ML models
+*.h5
+*.keras
+
+# Outputs
+outputs/
+
+# React
+node_modules/
+frontend/node_modules/
+
+# VS Code
+.vscode/
+
+# Environment
+.env
