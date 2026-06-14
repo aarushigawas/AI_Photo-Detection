@@ -20,7 +20,7 @@ def train_model(model, train_gen, val_gen):
     history = model.fit(
         train_gen,
         validation_data=val_gen,
-        epochs=1,
+        epochs=3,
         callbacks=[
             early_stop,
             checkpoint
