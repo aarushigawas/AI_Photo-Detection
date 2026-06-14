@@ -1,120 +1,164 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
+import { useState, useEffect, useRef } from 'react'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [file, setFile] = useState(null)
+  const [preview, setPreview] = useState(null)
+  const [result, setResult] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+
+  const dotRef = useRef(null)
+  const ringRef = useRef(null)
+
+  useEffect(() => {
+    return () => {
+      if (preview) URL.revokeObjectURL(preview)
+    }
+  }, [preview])
+
+  useEffect(() => {
+    const dot = dotRef.current
+    const ring = ringRef.current
+    let mx = 0, my = 0, rx = 0, ry = 0
+    let raf
+
+    const move = (e) => {
+      mx = e.clientX
+      my = e.clientY
+      dot.style.left = mx + 'px'
+      dot.style.top  = my + 'px'
+    }
+
+    const loop = () => {
+      rx += (mx - rx) * 0.12
+      ry += (my - ry) * 0.12
+      ring.style.left = rx + 'px'
+      ring.style.top  = ry + 'px'
+      raf = requestAnimationFrame(loop)
+    }
+
+    const over = (e) => {
+      if (e.target.closest('button, label, a, input')) ring.classList.add('hovering')
+      else ring.classList.remove('hovering')
+    }
+
+    window.addEventListener('mousemove', move)
+    window.addEventListener('mouseover', over)
+    raf = requestAnimationFrame(loop)
+    return () => {
+      window.removeEventListener('mousemove', move)
+      window.removeEventListener('mouseover', over)
+      cancelAnimationFrame(raf)
+    }
+  }, [])
+
+  function handleFile(e) {
+    setError(null)
+    const f = e.target.files && e.target.files[0]
+    if (!f) return
+    setFile(f)
+    setPreview(URL.createObjectURL(f))
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault()
+    setError(null)
+    if (!file) {
+      setError('Please select an image to analyze.')
+      return
+    }
+    setLoading(true)
+    setResult(null)
+    try {
+      const fd = new FormData()
+      fd.append('image', file)
+
+      const resp = await fetch('http://localhost:8000/predict', {
+        method: 'POST',
+        body: fd,
+      })
+
+      if (!resp.ok) throw new Error(`Server responded ${resp.status}`)
+
+      const data = await resp.json()
+      setResult(data)
+    } catch (err) {
+      setError(err.message || 'Network error')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+      <div className="cursor-dot" ref={dotRef} />
+      <div className="cursor-ring" ref={ringRef} />
 
-      <div className="ticks"></div>
+      <div className="app">
+        <header className="header">
+          <h1>AI Photo Detector</h1>
+          <p>Upload an image and the model will predict if it's AI-generated.</p>
+        </header>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+        <main className="main">
+          <form className="uploader" onSubmit={handleSubmit}>
+            <label className="file-label">
+              <input type="file" accept="image/*" onChange={handleFile} />
+              <span className="file-cta">Choose image</span>
+            </label>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
+            {preview && (
+              <div className="preview">
+                <img src={preview} alt="preview" />
+              </div>
+            )}
+
+            <div className="actions">
+              <button className={`btn primary${loading ? ' loading' : ''}`} type="submit" disabled={loading}>
+                {loading ? 'Analyzing…' : 'Analyze Image'}
+              </button>
+              <button
+                className="btn"
+                type="button"
+                onClick={() => {
+                  setFile(null)
+                  setPreview(null)
+                  setResult(null)
+                  setError(null)
+                }}
+                disabled={loading}
+              >
+                Reset
+              </button>
+            </div>
+          </form>
+
+          {error && <div className="message error">{error}</div>}
+
+          {result && (
+            <div className="result">
+              <h2>
+                Verdict:{' '}
+                <span className={result.prediction === 'REAL' ? 'tag real' : 'tag fake'}>
+                  {result.prediction}
+                </span>
+              </h2>
+              <p>Confidence: {result.confidence}%</p>
+              <div className="confidence-bar">
+                <div
+                  className={`confidence-fill ${result.prediction === 'REAL' ? 'good' : 'bad'}`}
+                  style={{ width: `${result.confidence}%` }}
+                />
+              </div>
+            </div>
+          )}
+        </main>
+
+        <footer className="footer">
+          <small>Using the project's ML API at /predict</small>
+        </footer>
+      </div>
     </>
   )
 }
