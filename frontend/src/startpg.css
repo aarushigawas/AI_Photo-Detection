@@ -1,0 +1,217 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+
+.sp-root {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: #030712;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Space Grotesk', sans-serif;
+  transition: opacity 0.7s ease, transform 0.7s ease;
+  cursor: none;
+}
+
+.sp-root.sp-exit {
+  opacity: 0;
+  transform: scale(1.04);
+  pointer-events: none;
+}
+
+/* ── Stars canvas ─── */
+.sp-stars {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+/* ── Custom cursor ─── */
+.sp-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 10px;
+  height: 10px;
+  background: rgba(96, 165, 250, 0.9);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: width 0.15s ease, height 0.15s ease, background 0.15s ease;
+  box-shadow: 0 0 8px rgba(96, 165, 250, 0.6);
+}
+
+.sp-cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(96, 165, 250, 0.35);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: transform 0.08s linear, width 0.2s ease, height 0.2s ease, border-color 0.2s ease;
+}
+
+/* ── Deep space bg gradient ─── */
+.sp-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 100%, rgba(30, 60, 120, 0.55) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 30% at 50% 110%, rgba(14, 165, 233, 0.12) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+/* ── Nav ─── */
+.sp-nav {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  padding: 22px 36px;
+  display: flex;
+  align-items: center;
+  z-index: 10;
+}
+
+.sp-logo {
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  letter-spacing: 0.15em;
+  color: rgba(255,255,255,0.45);
+  text-transform: uppercase;
+}
+
+/* ── Hero content ─── */
+.sp-hero {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  animation: heroIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes heroIn {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.sp-eyebrow {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(96, 165, 250, 0.7);
+  margin-bottom: 18px;
+}
+
+.sp-title {
+  font-size: clamp(48px, 9vw, 88px);
+  font-weight: 700;
+  line-height: 1.0;
+  letter-spacing: -2px;
+  color: #f0f6ff;
+  margin: 0 0 0 0;
+}
+
+.sp-title-accent {
+  background: linear-gradient(135deg, #60a5fa 0%, #38bdf8 50%, #818cf8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.sp-divider {
+  width: 48px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #60a5fa, transparent);
+  margin: 22px auto;
+  border-radius: 2px;
+}
+
+.sp-sub {
+  max-width: 420px;
+  font-size: 14px;
+  line-height: 1.75;
+  color: rgba(180, 200, 230, 0.65);
+  margin: 0 0 36px;
+  font-weight: 300;
+}
+
+/* ── CTA button ─── */
+.sp-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 32px;
+  background: transparent;
+  border: 1px solid rgba(96, 165, 250, 0.45);
+  border-radius: 100px;
+  color: #e0eeff;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  cursor: none;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.25s, transform 0.2s, box-shadow 0.25s;
+}
+
+.sp-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.1), rgba(56, 189, 248, 0.08));
+  opacity: 0;
+  transition: opacity 0.25s;
+  border-radius: inherit;
+}
+
+.sp-btn:hover {
+  border-color: rgba(96, 165, 250, 0.85);
+  box-shadow: 0 0 24px rgba(96, 165, 250, 0.22), inset 0 0 20px rgba(96, 165, 250, 0.05);
+  transform: translateY(-2px);
+}
+
+.sp-btn:hover::before { opacity: 1; }
+
+.sp-btn:active { transform: scale(0.97) translateY(0); }
+
+.sp-btn-text { position: relative; z-index: 1; }
+
+.sp-btn-arrow {
+  position: relative;
+  z-index: 1;
+  font-size: 16px;
+  transition: transform 0.2s;
+  display: inline-block;
+}
+
+.sp-btn:hover .sp-btn-arrow { transform: translateX(4px); }
+
+/* ── Footer ─── */
+.sp-footer {
+  position: absolute;
+  bottom: 20px;
+  left: 0; right: 0;
+  text-align: center;
+  z-index: 10;
+  color: rgba(255,255,255,0.2);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  font-family: 'Space Mono', monospace;
+}
+
+@media (max-width: 480px) {
+  .sp-title { letter-spacing: -1px; }
+  .sp-sub { font-size: 13px; padding: 0 12px; }
+}
