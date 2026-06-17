@@ -4,7 +4,15 @@ from model_loader import load_trained_model
 from routes.predict import router as predict_router
 from routes.health import router as health_router
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+
+
 app = FastAPI()
+app.mount(
+    "/heatmaps",
+    StaticFiles(directory="heatmaps"),
+    name="heatmaps"
+)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[

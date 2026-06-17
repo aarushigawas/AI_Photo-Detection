@@ -148,6 +148,26 @@ function App() {
               </div>
             </div>
           )}
+          {result?.heatmap && (
+            <div className="heatmap-section">
+              <h3>AI Focus Areas</h3>
+
+              <img
+                src={`http://localhost:8000/heatmaps/${result.heatmap}`}
+                alt="Heatmap"
+                className="heatmap-img"
+              />
+            </div>
+          )}
+
+          {result?.explanation && (
+            <div className="explanation-box">
+              <h3>Model Explanation</h3>
+
+              <p>{result.explanation}</p>
+            </div>
+          )}
+          
         </main>
 
         <footer className="footer">

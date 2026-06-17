@@ -1,9 +1,11 @@
 from fastapi import APIRouter
 from fastapi import UploadFile
 from fastapi import File
-
+from gradcam import make_gradcam_heatmap
+from heatmap_utils import save_heatmap
 from model_loader import get_model
 from image_preprocessor import preprocess_image
+from explanation import generate_explanation
 
 
 router = APIRouter()
@@ -24,6 +26,18 @@ async def predict_image(
         processed_image
     )
 
+    heatmap = make_gradcam_heatmap(
+        processed_image
+    )
+
+    explanation = generate_explanation(
+        heatmap
+    )
+
+    heatmap_file = save_heatmap(
+        heatmap,
+        processed_image
+    )
     confidence = float(
         prediction[0][0]
     )
@@ -39,9 +53,11 @@ async def predict_image(
         confidence = 1 - confidence
 
     return {
-        "prediction": verdict,
-        "confidence": round(
-            confidence * 100,
-            2
-        )
-    }
+    "prediction": verdict,
+    "confidence": round(
+        confidence * 100,
+        2
+    ),
+    "heatmap": heatmap_file,
+    "explanation": explanation
+}
